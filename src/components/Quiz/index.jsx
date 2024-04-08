@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
 import QUESTIONS from '../../data/questions';
-import quizCompleteImg from '../../assets/quiz-complete.png';
-import QuestionTimer from '../QuestionTimer';
+import Question from '../Question';
+import Summary from '../Summary';
 
 const Quiz = () => {
   const [userAnswers, setUserAnswers] = useState([]);
-  const activeQuestionIndex = userAnswers.length;
 
+  const activeQuestionIndex = userAnswers.length;
   const isQuizComplete = activeQuestionIndex === QUESTIONS.length;
 
   const handleSelectAnswer = useCallback((selectedAnswer) => {
@@ -18,42 +18,17 @@ const Quiz = () => {
   }, [handleSelectAnswer]);
 
   if (isQuizComplete) {
-    return (
-      <div id="summary">
-        <img src={quizCompleteImg} alt="Trophy Icon" />
-        <h2>Quiz completed!</h2>
-      </div>
-    );
+    return <Summary userAnswers={userAnswers} />;
   }
-
-  const shuffleAnswers = [...QUESTIONS[activeQuestionIndex].answers];
-  shuffleAnswers.sort(() => Math.random() - 0.5);
 
   return (
     <div id="quiz">
-      <div id="question">
-        <QuestionTimer
-          key={activeQuestionIndex}
-          timeout={10000}
-          onTimeout={() => {
-            handleSkipAnswer();
-          }}
-        />
-        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-        <ul id="answers">
-          {shuffleAnswers.map((answer) => (
-            <li key={answer} className="answer">
-              <button
-                onClick={() => {
-                  handleSelectAnswer(answer);
-                }}
-              >
-                {answer}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Question
+        key={activeQuestionIndex}
+        index={activeQuestionIndex}
+        onSelectAnswer={handleSelectAnswer}
+        onSkipAnswer={handleSkipAnswer}
+      />
     </div>
   );
 };
